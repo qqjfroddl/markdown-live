@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 마크다운 바로보기 (markdown-live)
 
-## Getting Started
+강의 중 학습자가 **마크다운을 직접 경험**하게 하는 연습 앱.
+왼쪽에 일반 텍스트를 쓰면 오른쪽에 마크다운 결과가 바로 보인다.
 
-First, run the development server:
+- 저장소: `qqjfroddl/markdown-live` — Vercel 연동, `main` 푸시 = 프로덕션 배포
+- 소유 계정: qqjfroddl (딥택트러닝 강의 도구)
+
+## 기능
+
+| 기능 | 왜 있나 |
+|---|---|
+| 2단 화면(입력 · 결과), 실시간 반영 | "이렇게 쓰면 이렇게 보인다"를 한눈에 |
+| 기호 카드 14종 (`#` `##` `**` `-` `- [ ]` `>` 표 등) | 문법을 외우기 전에 눌러서 넣어 본다. 넣은 뒤 예시 글자가 선택돼 바로 덮어쓸 수 있다 |
+| 기호 표시 켜기/끄기 | 결과 옆에 "이 모양을 만든 기호"를 작게 붙여, 입력과 결과를 짝지어 보게 한다 |
+| 예시 3종 (기본 연습 · AI 프롬프트 · 회의록) | 강의 흐름에 맞춰 바로 불러 쓴다 |
+| 글자 크기 14~32 | 빔프로젝터로 보여줄 때 |
+| 지우기·예시 교체 후 15초 되돌리기 | 실수로 날린 글 복구 |
+| 마지막 글 자동 저장(브라우저 저장소) | 새로고침해도 이어서 연습 |
+
+## 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm test         # 기호 넣기 로직 테스트 (node --test)
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 환경변수
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**없다.** 서버·DB·로그인이 없는 브라우저 전용 앱이다.
+(링크 미리보기 절대주소는 Vercel이 넣어 주는 `VERCEL_PROJECT_PRODUCTION_URL`을 자동으로 쓴다)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 구조
 
-## Learn More
+```
+app/layout.tsx            메타데이터·페이퍼로지 폰트
+app/opengraph-image.tsx   링크 미리보기 카드(빌드 때 생성, 페이퍼로지 TTF)
+app/icon.svg              파비콘(Lucide hash)
+components/ClientShell    연습 화면을 브라우저에서만 그리는 껍데기
+components/Playground     화면 전체
+lib/syntax.ts             기호 카드 정의 — 카드를 늘리려면 여기만 고친다
+lib/insert.ts             카드 → 글에 기호 끼워 넣기 (순수 함수, 테스트 대상)
+lib/presets.ts            예시 글
+lib/render.ts             마크다운 → HTML (marked + DOMPurify)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 기술 결정과 이유
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **서버·DB 없음** — 저장할 데이터가 없다. 학습자 글은 각자 브라우저에만 남는다(개인정보 수집 없음).
+- **marked(GFM) + DOMPurify** — 표·체크리스트가 필요해서 GFM, 학습자가 아무 글이나 붙여 넣을 수 있으니 스크립트는 반드시 걸러낸다.
+- **`breaks: true`(엔터 한 번 = 줄바꿈)** — 표준 마크다운은 엔터 두 번이 문단이지만, 메모장 감각과 ChatGPT 등 AI 화면 표시 방식에 맞췄다. 강의에서 "AI 답변이 이렇게 보이는 이유"로 바로 연결된다.
+- **브라우저 전용 렌더링(`ssr: false`)** — 저장된 글과 서버 첫 화면이 달라 깜빡이는 문제를 원천 차단.
+- **기호 표시는 CSS 가상요소로** — 결과 HTML을 건드리지 않아 켜고 꺼도 결과 모양은 그대로다.
+- **카드 클릭 시 포커스 유지** — `mousedown` 기본 동작을 막아 입력창 커서·선택이 남게 했다. 카드를 누르고 곧바로 타이핑해야 학습 흐름이 끊기지 않는다.
