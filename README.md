@@ -3,6 +3,7 @@
 강의 중 학습자가 **마크다운을 직접 경험**하게 하는 연습 앱.
 왼쪽에 일반 텍스트를 쓰면 오른쪽에 마크다운 결과가 바로 보인다.
 
+- 운영 주소: https://deeptact-markdown.vercel.app
 - 저장소: `qqjfroddl/markdown-live` — Vercel 연동, `main` 푸시 = 프로덕션 배포
 - 소유 계정: qqjfroddl (딥택트러닝 강의 도구)
 
