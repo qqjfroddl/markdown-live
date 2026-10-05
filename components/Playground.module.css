@@ -1,4 +1,5 @@
-/* 화면 구조: 머리말 → 기호 카드 → 2단(입력|결과). 데스크톱은 한 화면에 꽉 차고 각 칸이 따로 스크롤된다 */
+/* 고정폭 글꼴 줄의 "Paperlogy": 영문 고정폭 글꼴에는 한글이 없어 굴림체로 떨어지며 글자 사이가 벌어진다 → 한글만 페이퍼로지로 받는다
+   화면 구조: 머리말 → 기호 카드 → 2단(입력|결과). 데스크톱은 한 화면에 꽉 차고 각 칸이 따로 스크롤된다 */
 
 .app {
   --fs: 18px;
@@ -183,7 +184,7 @@
   border-radius: 5px;
   background: var(--mark-bg);
   color: var(--mark-fg);
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-family: ui-monospace, "Cascadia Code", Consolas, "Paperlogy", monospace;
   font-size: 13px;
   font-weight: 700;
   text-align: center;
@@ -472,7 +473,7 @@
   padding: 0.1em 0.35em;
   border-radius: 4px;
   background: #eeedf0;
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-family: ui-monospace, "Cascadia Code", Consolas, "Paperlogy", monospace;
   font-size: 0.9em;
 }
 
@@ -482,6 +483,57 @@
   border-radius: 6px;
   background: #f7f6f3;
   overflow-x: auto;
+}
+
+.codeWrap {
+  position: relative;
+}
+
+/* 복사 버튼 — 터치 기기에서도 보이도록 마우스를 올리지 않아도 늘 보인다 */
+.copyBtn {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.copyBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.copyBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.copyBtn[data-state="done"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.copyBtn[data-state="fail"] {
+  border-color: #b4483c;
+  color: #b4483c;
+}
+
+/* 버튼이 첫 줄 코드를 가리지 않게 오른쪽 여백 */
+.codeWrap pre {
+  padding-right: 5.5em;
 }
 
 .preview pre code {
@@ -551,7 +603,7 @@
   border-radius: 4px;
   background: var(--mark-bg);
   color: var(--mark-fg);
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-family: ui-monospace, "Cascadia Code", Consolas, "Paperlogy", monospace;
   font-size: max(12px, calc(var(--fs) * 0.72));
   font-weight: 700;
   font-style: normal;

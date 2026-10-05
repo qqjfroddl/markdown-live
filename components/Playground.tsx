@@ -6,6 +6,7 @@ import { SYNTAXES, type Syntax } from "@/lib/syntax.ts";
 import { insertSyntax } from "@/lib/insert.ts";
 import { PRESETS } from "@/lib/presets.ts";
 import { renderMarkdown } from "@/lib/render.ts";
+import { addCopyButtons, copyText, COPY_LABEL } from "@/lib/copy.ts";
 import styles from "./Playground.module.css";
 
 // marks 키를 v2로 바꾼 이유: 예전 판은 처음 열 때 "on"을 저장해 버려서, 키를 그대로 두면 이미 열어 본 사람은 계속 켜진 채로 보인다
@@ -47,7 +48,10 @@ export default function Playground() {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const pendingSelection = useRef<[number, number] | null>(null);
 
-  const html = useMemo(() => renderMarkdown(text), [text]);
+  const html = useMemo(
+    () => addCopyButtons(renderMarkdown(text), { wrap: styles.codeWrap, button: styles.copyBtn }),
+    [text],
+  );
   const isEmpty = text.trim().length === 0;
   const lineCount = text.length === 0 ? 0 : text.split("\n").length;
 
@@ -97,6 +101,23 @@ export default function Playground() {
     if (!text) return;
     replaceAll("", "글을 모두 지웠습니다.");
     editorRef.current?.focus();
+  }
+
+  // 코드 블록 복사 — 버튼은 HTML 문자열로 들어가므로 결과 칸 하나에서 위임 처리한다
+  async function onPreviewClick(e: React.MouseEvent<HTMLElement>) {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-copy]");
+    if (!btn) return;
+    const code = btn.parentElement?.querySelector("pre")?.textContent ?? "";
+    // marked는 코드 끝에 줄바꿈을 하나 붙인다 — 붙여 넣을 때 빈 줄이 생기지 않게 뗀다
+    const ok = await copyText(code.replace(/\n$/, ""));
+    const label = btn.querySelector("span");
+    if (!label) return;
+    label.textContent = ok ? "복사됨" : "복사 실패";
+    btn.dataset.state = ok ? "done" : "fail";
+    window.setTimeout(() => {
+      label.textContent = COPY_LABEL;
+      delete btn.dataset.state;
+    }, 1500);
   }
 
   function restore() {
@@ -246,6 +267,7 @@ export default function Playground() {
           ) : (
             <article
               className={`${styles.preview} ${showMarks ? styles.marks : ""}`}
+              onClick={onPreviewClick}
               dangerouslySetInnerHTML={{ __html: html }}
             />
           )}
