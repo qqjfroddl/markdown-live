@@ -8,7 +8,8 @@ import { PRESETS } from "@/lib/presets.ts";
 import { renderMarkdown } from "@/lib/render.ts";
 import styles from "./Playground.module.css";
 
-const STORE = { text: "mdlive:text", size: "mdlive:size", marks: "mdlive:marks" };
+// marks 키를 v2로 바꾼 이유: 예전 판은 처음 열 때 "on"을 저장해 버려서, 키를 그대로 두면 이미 열어 본 사람은 계속 켜진 채로 보인다
+const STORE = { text: "mdlive:text", size: "mdlive:size", marks: "mdlive:marks-v2" };
 const SIZE_MIN = 14;
 const SIZE_MAX = 32;
 const SIZE_STEP = 2;
@@ -39,7 +40,8 @@ export default function Playground() {
     const n = Number(readStore(STORE.size));
     return n >= SIZE_MIN && n <= SIZE_MAX ? n : 18;
   });
-  const [showMarks, setShowMarks] = useState(() => readStore(STORE.marks) !== "off");
+  // 기본은 꺼짐 — 결과 화면은 노션처럼 깔끔하게 시작하고, 설명이 필요할 때만 켠다(2026-10-05 소장님 결정)
+  const [showMarks, setShowMarks] = useState(() => readStore(STORE.marks) === "on");
   const [undo, setUndo] = useState<Undo | null>(null);
   const [presetValue, setPresetValue] = useState("");
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -136,17 +138,6 @@ export default function Playground() {
             </select>
           </label>
 
-          <button
-            type="button"
-            className={`${styles.toolBtn} ${showMarks ? styles.toolBtnOn : ""}`}
-            aria-pressed={showMarks}
-            onClick={() => setShowMarks((v) => !v)}
-            title="결과 화면에 어떤 기호가 만든 모양인지 표시합니다"
-          >
-            {showMarks ? <Eye size={18} aria-hidden /> : <EyeOff size={18} aria-hidden />}
-            기호 표시 {showMarks ? "켜짐" : "꺼짐"}
-          </button>
-
           <div className={styles.sizeGroup} role="group" aria-label="글자 크기">
             <button
               type="button"
@@ -223,11 +214,26 @@ export default function Playground() {
         </section>
 
         <section className={`${styles.pane} ${styles.previewPane}`} aria-labelledby="pane-output">
-          <div className={styles.paneHead}>
+          <div className={`${styles.paneHead} ${styles.paneHeadRow}`}>
             <h2 id="pane-output" className={styles.paneTitle}>
               <span className={`${styles.step} ${styles.stepAccent}`}>2</span> 마크다운으로 보이는 모습
-              <span className={styles.paneHint}>{showMarks ? "초록 표시 = 그 모양을 만든 기호" : "결과만 보기"}</span>
+              {showMarks && <span className={styles.paneHint}>초록 표시 = 그 모양을 만든 기호</span>}
             </h2>
+            {/* 결과를 보다가 "이건 어떤 기호로 만든 거지?" 싶을 때 바로 옆에서 누르도록 결과 칸 머리에 둔다 */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showMarks}
+              className={`${styles.marksSwitch} ${showMarks ? styles.marksSwitchOn : ""}`}
+              onClick={() => setShowMarks((v) => !v)}
+              title="결과 옆에 그 모양을 만든 기호를 함께 보여줍니다"
+            >
+              {showMarks ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
+              기호 같이 보기
+              <span className={styles.switchTrack} aria-hidden>
+                <span className={styles.switchThumb} />
+              </span>
+            </button>
           </div>
           {isEmpty ? (
             <div className={styles.empty}>

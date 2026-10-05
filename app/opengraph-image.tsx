@@ -15,15 +15,6 @@ async function loadFont(weight: string): Promise<ArrayBuffer> {
   return res.arrayBuffer();
 }
 
-const mark = {
-  background: "#DCEBEA",
-  color: "#2C5A5E",
-  borderRadius: 6,
-  padding: "2px 10px",
-  marginRight: 14,
-  fontWeight: 700,
-};
-
 export default async function Image() {
   const [bold, medium] = await Promise.all([loadFont("7Bold"), loadFont("5Medium")]);
 
@@ -96,14 +87,12 @@ export default async function Image() {
               padding: "24px 32px",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", fontSize: 46, fontWeight: 700, paddingBottom: 8, borderBottom: "3px solid #2E3142" }}>
-              <span style={{ ...mark, fontSize: 26 }}>#</span>오늘 배울 것
-            </div>
+            <div style={{ display: "flex", alignItems: "center", fontSize: 46, fontWeight: 700 }}>오늘 배울 것</div>
             <div style={{ display: "flex", alignItems: "center", fontSize: 30, marginTop: 16 }}>
-              <span style={{ ...mark, fontSize: 22 }}>-</span>제목 만들기
+              <span style={{ marginRight: 14 }}>•</span>제목 만들기
             </div>
             <div style={{ display: "flex", alignItems: "center", fontSize: 30, marginTop: 8 }}>
-              <span style={{ ...mark, fontSize: 22 }}>-</span>
+              <span style={{ marginRight: 14 }}>•</span>
               <span style={{ fontWeight: 700 }}>굵게</span>
               <span style={{ marginLeft: 8 }}>쓰기</span>
             </div>

@@ -95,12 +95,6 @@
   border-color: var(--accent);
 }
 
-.toolBtnOn {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
 .toolBtn:disabled,
 .iconBtn:disabled {
   opacity: 0.4;
@@ -229,6 +223,71 @@
   border-bottom: 1px solid var(--line);
 }
 
+.paneHeadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-block: 8px;
+}
+
+.marksSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.marksSwitch:hover,
+.marksSwitchOn {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.marksSwitch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.switchTrack {
+  position: relative;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
+  background: #cfd0d6;
+  transition: background 0.15s;
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  transition: transform 0.15s;
+}
+
+.marksSwitchOn .switchTrack {
+  background: var(--accent);
+}
+
+.marksSwitchOn .switchThumb {
+  transform: translateX(12px);
+}
+
 .paneTitle {
   display: flex;
   align-items: center;
@@ -340,14 +399,10 @@
 
 .preview h1 {
   font-size: 2em;
-  padding-bottom: 0.25em;
-  border-bottom: 2px solid var(--primary);
 }
 
 .preview h2 {
   font-size: 1.5em;
-  padding-bottom: 0.2em;
-  border-bottom: 1px solid var(--line);
 }
 
 .preview h3 {
@@ -378,20 +433,35 @@
   margin: 0.2em 0;
 }
 
+.preview li:has(> input[type="checkbox"]) {
+  list-style: none;
+}
+
+/* 결과 화면의 체크박스는 누를 수 없는(disabled) 상태라 브라우저가 흐리게 칠한다 — 모양을 직접 그려 또렷하게 */
 .preview li input[type="checkbox"] {
+  appearance: none;
   width: 1em;
   height: 1em;
-  margin: 0 0.4em 0 0;
-  vertical-align: -0.1em;
-  accent-color: var(--accent);
+  margin: 0 0.45em 0 -1.3em;
+  vertical-align: -0.12em;
+  border: 1.5px solid var(--primary);
+  border-radius: 3px;
+  background: var(--paper);
+}
+
+.preview li input[type="checkbox"]:checked {
+  border-color: var(--accent);
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat;
+}
+
+.marks li input[type="checkbox"] {
+  margin-left: 0;
 }
 
 .preview blockquote {
   margin: 0.8em 0;
-  padding: 0.4em 1em;
-  border-left: 4px solid var(--accent);
-  background: var(--surface);
-  color: #474a5a;
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 3px solid var(--primary);
 }
 
 .preview blockquote p {
@@ -409,9 +479,8 @@
 .preview pre {
   margin: 0.8em 0;
   padding: 0.9em 1.1em;
-  border-radius: 8px;
-  background: var(--primary);
-  color: #f2f1ef;
+  border-radius: 6px;
+  background: #f7f6f3;
   overflow-x: auto;
 }
 
